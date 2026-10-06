@@ -1,28 +1,15 @@
 <div align="center">
 <img src="./assets/logo.png" width="128" alt="Visual Abstention logo">
 <h1> Visual Abstention in Unified Multimodal Models </h1>
-</div>
 
-<div align="center">
+[Chufan Shi](https://chufanshi.notion.site/aboutme)<sup>1\*</sup>, [Cheng Yang](https://chengyang.notion.site/aboutme)<sup>2\*</sup>, [Tiannuo Yang](https://tiannuo-yang.github.io/)<sup>1</sup>, [Isadora White](https://icwhite.github.io/website/)<sup>2</sup>, [Yiwei Chen](https://vivianc2.github.io/)<sup>2</sup>, [Taylor Berg-Kirkpatrick](https://cseweb.ucsd.edu/~tberg/)<sup>2</sup>, [Xuezhe Ma](https://xuezhemax.github.io/)<sup>1</sup>
 
-![Data License](https://img.shields.io/badge/Data%20License-Apache%202.0-blue.svg)
-![Code License](https://img.shields.io/badge/Code%20License-Apache%202.0-blue.svg)
-![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)
-</div>
+<sup>1</sup>University of Southern California &nbsp;&nbsp; <sup>2</sup>University of California San Diego &nbsp;&nbsp; <sup>\*</sup>Equal contribution
 
-<div align="center">
-  🌐 <a href="https://visual-abstention.github.io">Website</a> |
-  📚 <a href="https://huggingface.co/datasets/visual-abstention/Draw-or-Decline">DoD Benchmark</a> |
-  🧩 <a href="https://huggingface.co/datasets/visual-abstention/VisTA-Train">Training Data</a> |
-  📃 <a href="<ARXIV_LINK>">Paper</a>
-</div>
+![Data License](https://img.shields.io/badge/Data%20License-Apache%202.0-blue.svg) ![Code License](https://img.shields.io/badge/Code%20License-Apache%202.0-blue.svg) ![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)
 
-<div align="center">
+🌐 <a href="https://visual-abstention.github.io">Website</a> | 📚 <a href="https://huggingface.co/datasets/visual-abstention/Draw-or-Decline">DoD Benchmark</a> | 🧩 <a href="https://huggingface.co/datasets/visual-abstention/VisTA-Train">Training Data</a> | 📃 Paper (coming soon)
 
-**Chufan Shi**<sup>1\*</sup>, **Cheng Yang**<sup>2\*</sup>, **Tiannuo Yang**<sup>1</sup>, **Isadora White**<sup>2</sup>,
-**Yiwei Chen**<sup>2</sup>, **Taylor Berg-Kirkpatrick**<sup>2</sup>, **Xuezhe Ma**<sup>1</sup>
-
-<sup>1</sup>University of Southern California &nbsp; <sup>2</sup>University of California San Diego &nbsp; <sup>\*</sup>Equal contribution
 </div>
 
 ## 🎉 What's New
@@ -31,28 +18,45 @@
 
 ## 🎏 Introduction
 
-When a requested edit is impossible under the task's rules, a model should recognize that no valid solution exists,
-say so, and **decline to generate**. We call this behavior **visual abstention**.
+Unified multimodal models (UMMs) can both understand and generate images, but they rarely use what they understand
+to decide **whether** an edit should be made at all. When a requested edit is impossible under the task's rules, a
+model should recognize that no valid solution exists, say so, and **decline to generate**. We call this behavior
+**visual abstention**.
 
-* **Draw-or-Decline (DoD)** is a benchmark of **1,050 feasible–infeasible request pairs** (2,100 requests) across
-  **7 task categories**: material modification, medium interaction, motion state change, pose adjustment, spatial
-  arrangement and temporal evolution (real-world scenes from UniREditBench), and maze solving (programmatically
-  generated maps). A real-world pair shares its input image and differs in the instruction; a maze pair shares its
-  instruction and differs in one corridor cell that blocks the only path. DoD measures editing success *E*, refusal
-  success *D* and false refusal *D<sub>f</sub>*, with Kimi-K3 as the judge.
-* **VisTA** (**Vis**ual **T**ransformation and **A**bstention) trains a model on paired feasible and infeasible
-  examples so that it judges feasibility in its reasoning before deciding whether to draw. An infeasible example
-  supervises a reasoning that explains the conflict and ends with `[ABSTAIN]`, with no image. **VisTA-BAGEL** is
-  UniREdit-BAGEL fine-tuned with VisTA on 38,224 pairs.
-
-The 8 evaluated unified multimodal models rarely refuse infeasible requests: the strongest editor, UniREdit-BAGEL,
-completes **68.4%** of feasible edits but refuses only **0.4%** of infeasible requests, and a reminder that allows
-refusal raises refusals at the cost of editing accuracy. Without any reminder, VisTA-BAGEL refuses **93.0%** of
-infeasible requests, falsely refuses **0.8%** of feasible ones, and completes **74.3%** of feasible edits.
+| | What it is |
+|---|---|
+| **Visual abstention** | the task: draw the edit when the request is feasible; explain the conflict and generate no image when it is not |
+| **Draw-or-Decline (DoD)** | the benchmark: 1,050 feasible–infeasible pairs (2,100 requests) in 7 categories, built as minimal pairs that share an input image (6 real-world categories from UniREditBench) or an instruction (generated mazes) |
+| **VisTA** | the method (**Vis**ual **T**ransformation and **A**bstention): paired training in which the model reasons first and then either draws the edit or ends with `[ABSTAIN]` and no image |
+| **VisTA-BAGEL** | the model: UniREdit-BAGEL trained with VisTA on 38,224 pairs |
 
 <div align="center">
 <img src="./assets/overview.png" width="100%" alt="Visual abstention in a maze task: draw a path when one exists, decline when none exists">
 </div>
+
+## 🏆 Main Results
+
+Editing success *E* on the 1,050 feasible requests and refusal success *D* on the 1,050 infeasible requests of DoD (%),
+judged by Kimi-K3. *Reminder* appends "If no solution exists under these constraints, state that no solution exists
+and briefly explain why." to every request.
+
+| Model | *E* | *D* | *E* (reminder) | *D* (reminder) |
+|---|---:|---:|---:|---:|
+| UniREdit-BAGEL | 68.4 | 0.4 | 68.3 | 5.2 |
+| SenseNova-U1.0 | 64.0 | 0.5 | 63.9 | 16.9 |
+| UniReason | 52.8 | 0.1 | 51.9 | 7.0 |
+| Uni-CoT | 42.1 | 0.0 | 39.7 | 40.4 |
+| BAGEL | 36.8 | 0.0 | 34.7 | 55.0 |
+| InternVL-U | 32.0 | 0.2 | 28.3 | 28.1 |
+| BAGEL-Canvas | 9.8 | 0.0 | 2.9 | 16.0 |
+| ThinkMorph | 8.0 | 1.7 | 5.2 | 57.5 |
+| **VisTA-BAGEL (ours)** | **74.3** | **93.0** | **73.6** | **93.4** |
+
+* **Editing ability does not bring abstention.** Without a reminder, no UMM refuses more than 1.7% of infeasible
+  requests, and their reasoning almost never acknowledges the conflict.
+* **A reminder trades editing for refusals.** It raises refusals for every model but lowers editing success.
+* **VisTA learns to abstain without losing editing.** VisTA-BAGEL refuses 93.0% of infeasible requests without any
+  reminder, falsely refuses only 0.8% of feasible ones, and edits better than its starting point.
 
 > **The weights of VisTA-BAGEL are not released.** This repository provides the code and data to train it from the
 > public UniREdit-BAGEL weights.
@@ -66,6 +70,7 @@ Click to expand the table of contents
 
 - [🎉 What's New](#-whats-new)
 - [🎏 Introduction](#-introduction)
+- [🏆 Main Results](#-main-results)
 - [🚀 Quick Start](#-quick-start)
   - [Setup Environment](#setup-environment)
   - [Download Data](#download-data)
@@ -175,6 +180,10 @@ MODEL_PATH=<BAGEL-7B-MoT> PYTHONPATH=../bagel:. python check_data.py --files    
 
 ## 📚 Data
 
+<div align="center">
+<img src="./assets/showcase.png" width="100%" alt="One feasible-infeasible pair from each of the seven DoD categories">
+</div>
+
 ### DoD benchmark
 
 `instruction.jsonl` (what a model sees) and `ground_truth_criteria.jsonl` (labels, hidden from the model):
@@ -213,7 +222,7 @@ WebP and the mazes as PNG.
 ## 🗂️ Repository Layout
 
 ```
-assets/               logo and overview figure
+assets/               logo and figures
 data/dod_examples/    42 DoD requests (the first 3 pairs of every category) with their images
 data/train_examples/  70 training examples (the first 5 pairs of every category) with their images
 data/download.py      downloads the full DoD benchmark and training set from Hugging Face (see "Data")
@@ -235,7 +244,7 @@ Licence headers are unchanged.
   title   = {Visual Abstention in Unified Multimodal Models},
   author  = {Shi, Chufan and Yang, Cheng and Yang, Tiannuo and White, Isadora and Chen, Yiwei and
              Berg-Kirkpatrick, Taylor and Ma, Xuezhe},
-  journal = {arXiv preprint arXiv:<ARXIV_ID>},
+  journal = {arXiv preprint},
   year    = {2026}
 }
 ```
