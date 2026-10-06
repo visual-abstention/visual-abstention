@@ -1,64 +1,86 @@
-# Visual Abstention in Unified Multimodal Models
+<div align="center">
+<img src="./assets/logo.png" width="128" alt="Visual Abstention logo">
+<h1> Visual Abstention in Unified Multimodal Models </h1>
+</div>
+
+<div align="center">
+
+![Data License](https://img.shields.io/badge/Data%20License-Apache%202.0-blue.svg)
+![Code License](https://img.shields.io/badge/Code%20License-Apache%202.0-blue.svg)
+![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)
+</div>
+
+<div align="center">
+  🌐 <a href="https://visual-abstention.github.io">Website</a> |
+  📚 <a href="https://huggingface.co/datasets/visual-abstention/Draw-or-Decline">DoD Benchmark</a> |
+  🧩 <a href="https://huggingface.co/datasets/visual-abstention/VisTA-Train">Training Data</a> |
+  📃 <a href="<ARXIV_LINK>">Paper</a>
+</div>
+
+<div align="center">
 
 **Chufan Shi**<sup>1\*</sup>, **Cheng Yang**<sup>2\*</sup>, **Tiannuo Yang**<sup>1</sup>, **Isadora White**<sup>2</sup>,
 **Yiwei Chen**<sup>2</sup>, **Taylor Berg-Kirkpatrick**<sup>2</sup>, **Xuezhe Ma**<sup>1</sup>
 
 <sup>1</sup>University of Southern California &nbsp; <sup>2</sup>University of California San Diego &nbsp; <sup>\*</sup>Equal contribution
+</div>
 
-[Paper](<ARXIV_LINK>) | [DoD benchmark](https://huggingface.co/datasets/visual-abstention/Draw-or-Decline) |
-[VisTA training data](https://huggingface.co/datasets/visual-abstention/VisTA-Train) |
-[Code](https://github.com/visual-abstention/visual-abstention)
+## 🎉 What's New
 
-This repository contains the code to evaluate unified multimodal models (UMMs) on the Draw-or-Decline benchmark and
-to train VisTA-BAGEL, together with small example subsets of both datasets.
+- **[2026.10.06]** 🔧 Code, the DoD benchmark and the VisTA training data are released.
 
-## Overview
+## 🎏 Introduction
 
-* **Visual abstention** (the task). A model receives an input image and an instruction. A request is *feasible* if
-  some image satisfies all of its constraints (the requested change, its target, and the content that must stay
-  unchanged), and *infeasible* otherwise. For a feasible request the model should draw the edit. For an infeasible
-  request it should *visually abstain*: state explicitly that no valid solution exists and end its response without
-  generating an image. Returning the input image unchanged does not count as abstention.
-* **Draw-or-Decline (DoD)** (the benchmark). 1,050 feasible/infeasible request pairs (2,100 requests), 150 pairs in
-  each of 7 categories: material modification, medium interaction, motion state change, pose adjustment, spatial
-  arrangement, and temporal evolution (real-world scenes from UniREditBench), and maze solving (programmatically
+When a requested edit is impossible under the task's rules, a model should recognize that no valid solution exists,
+say so, and **decline to generate**. We call this behavior **visual abstention**.
+
+* **Draw-or-Decline (DoD)** is a benchmark of **1,050 feasible–infeasible request pairs** (2,100 requests) across
+  **7 task categories**: material modification, medium interaction, motion state change, pose adjustment, spatial
+  arrangement and temporal evolution (real-world scenes from UniREditBench), and maze solving (programmatically
   generated maps). A real-world pair shares its input image and differs in the instruction; a maze pair shares its
-  instruction and differs in one corridor cell that blocks the only path. DoD measures editing success *E* on
-  feasible requests, refusal success *D* on infeasible requests, and false refusal *D<sub>f</sub>* on feasible
-  requests, with Kimi-K3 as the judge.
-* **VisTA** (Visual Transformation and Abstention, the method) and **VisTA-BAGEL** (the model). VisTA trains a model
-  on paired feasible and infeasible examples so that it judges feasibility in its reasoning before deciding whether
-  to generate. A feasible example supervises the reasoning and the target image; an infeasible example supervises a
-  reasoning that explains the conflict and ends with the plain-text marker `[ABSTAIN]`, with no image. VisTA-BAGEL is
-  UniREdit-BAGEL fine-tuned with VisTA on 38,224 training pairs.
+  instruction and differs in one corridor cell that blocks the only path. DoD measures editing success *E*, refusal
+  success *D* and false refusal *D<sub>f</sub>*, with Kimi-K3 as the judge.
+* **VisTA** (**Vis**ual **T**ransformation and **A**bstention) trains a model on paired feasible and infeasible
+  examples so that it judges feasibility in its reasoning before deciding whether to draw. An infeasible example
+  supervises a reasoning that explains the conflict and ends with `[ABSTAIN]`, with no image. **VisTA-BAGEL** is
+  UniREdit-BAGEL fine-tuned with VisTA on 38,224 pairs.
 
-In the paper, the 8 evaluated UMMs rarely refuse infeasible requests without a reminder (the strongest editor,
-UniREdit-BAGEL, edits 68.4% of feasible requests correctly but refuses 0.4% of infeasible ones), and a reminder that
-allows refusal raises refusals at the cost of editing accuracy. Without any reminder, VisTA-BAGEL refuses 93.0% of
-infeasible requests, falsely refuses 0.8% of feasible ones, and completes 74.3% of feasible edits. See the paper for
-all results.
+The 8 evaluated unified multimodal models rarely refuse infeasible requests: the strongest editor, UniREdit-BAGEL,
+completes **68.4%** of feasible edits but refuses only **0.4%** of infeasible requests, and a reminder that allows
+refusal raises refusals at the cost of editing accuracy. Without any reminder, VisTA-BAGEL refuses **93.0%** of
+infeasible requests, falsely refuses **0.8%** of feasible ones, and completes **74.3%** of feasible edits.
 
-**The weights of VisTA-BAGEL are not released.** This repository provides the training code and data to train it
-from the public UniREdit-BAGEL weights.
+<div align="center">
+<img src="./assets/overview.png" width="100%" alt="Visual abstention in a maze task: draw a path when one exists, decline when none exists">
+</div>
 
-## Repository layout
+> **The weights of VisTA-BAGEL are not released.** This repository provides the code and data to train it from the
+> public UniREdit-BAGEL weights.
 
-```
-data/dod_examples/    42 DoD requests (the first 3 pairs of every category) with their images
-data/train_examples/  70 training examples (the first 5 pairs of every category) with their images
-data/download.py      downloads the full DoD benchmark and training set from Hugging Face (see "Data")
-bagel/                the BAGEL code base (trainer, data, model, inferencer) that our runs use; Apache-2.0
-vista/                VisTA training: dataset, MixedHint sampler, hooks, entry point, launch script, data checks
-eval/                 inference (infer.py) and the Kimi-K3 judge (judge.py)
-```
+## 📄 Table of Contents
 
-`bagel/` is the code of the official [BAGEL](https://github.com/ByteDance-Seed/Bagel) release (ByteDance Seed,
-Apache-2.0) with the modifications that our runs need: training samples without a target image (infeasible requests
-have none), token-weighted dataset mixing, and checkpoint options. It also contains the think-trace dataset of
-[Bagel-Zebra-CoT](https://github.com/multimodal-reasoning-lab/Bagel-Zebra-CoT) (Apache-2.0), as used by UniREdit.
-Licence headers are unchanged.
+<details>
+<summary>
+Click to expand the table of contents
+</summary>
 
-## Setup
+- [🎉 What's New](#-whats-new)
+- [🎏 Introduction](#-introduction)
+- [🚀 Quick Start](#-quick-start)
+  - [Setup Environment](#setup-environment)
+  - [Download Data](#download-data)
+  - [Evaluate Models](#evaluate-models)
+  - [Train VisTA-BAGEL](#train-vista-bagel)
+- [📚 Data](#-data)
+- [🗂️ Repository Layout](#️-repository-layout)
+- [💬 Citation](#-citation)
+- [📌 License](#-license)
+
+</details>
+
+## 🚀 Quick Start
+
+### Setup Environment
 
 ```
 pip install -r requirements.txt          # Python 3.10, one node with 8 GPUs for training, 1 GPU for inference
@@ -71,7 +93,7 @@ Checkpoints (Hugging Face):
 | BAGEL configs, tokenizer, VAE, ViT (`MODEL_PATH`) | `ByteDance-Seed/BAGEL-7B-MoT` | `5019f57d168e5816e8f3f701b17cc816bb7cf24b` |
 | Initialization of VisTA-BAGEL (`INIT_WEIGHTS`) | `maplebb/UniREdit-Bagel-bf16` | `2131cfdab2da79172e0ce429cdf28c2150e0b457` |
 
-## Data
+### Download Data
 
 The full datasets are on Hugging Face; this repository only holds small example subsets, which have the same format
 and run with the code as they are. Download the full data into the folders that the code reads:
@@ -93,7 +115,67 @@ The images of the training set are distributed as tar shards (`images/*.tar` wit
 `--keep-archives` to keep them and `--verify` to check their SHA-256 first). If you download the data another way,
 put the files at the paths above: image paths in the annotations are relative to `data/dod/` and `data/train/`.
 
-### DoD
+### Evaluate Models
+
+Two settings, both with reasoning enabled: `no_hint` gives the request as it is, and `decline_hint` appends
+"If no solution exists under these constraints, state that no solution exists and briefly explain why."
+In the paper these are the settings *without* and *with the reminder*.
+
+By default the scripts read `data/dod_examples/`. For the full benchmark, download it (see "Data") and pass
+`--data ../data/dod` to `infer.py` and `judge.py`.
+
+```
+cd eval
+export PYTHONPATH=../bagel:.
+# 1. inference (16 shards can run in parallel; every case has its own seed, so the sharding does not change outputs)
+python infer.py infer --checkpoint <model.safetensors> --model-path <BAGEL-7B-MoT> --setting no_hint \
+       --out runs/vista_no_hint --shards 16 --shard-index 0
+python infer.py merge --out runs/vista_no_hint
+# 2. judging with Kimi-K3 (any OpenAI-compatible endpoint serving the model name "kimi-k3")
+KIMI_BASE_URLS=http://<host>:8000/v1 python judge.py --run runs/vista_no_hint
+```
+
+The model reasons first. If the reasoning ends with `[ABSTAIN]` it stops and no image is generated; otherwise it
+draws the edit. `judge.py` writes `runs/.../scoring/summary.json` with, over all requests and by category:
+
+* `feasible_edit`: editing success E, the requested edit is made and unrelated content is preserved (judged from the images);
+* `infeasible_cot`: refusal success D, the reasoning explicitly concludes that the request has no valid solution;
+* `false_refusal`: D<sub>f</sub>, the same conclusion on a feasible request.
+
+Judgments that fail or are malformed stay `pending` and are counted in the denominator, never as failures.
+Generation settings (50 image steps, text CFG 4.0, image CFG 2.0, at most 1,000 reasoning tokens, greedy text
+decoding) are in `eval/infer.py`; the judge prompts are in `eval/judge.py`. The judge also receives the label of the
+request (`ground_truth`); in the released data its explanation fields (`reason`, `witness`, `certificate`) are in
+English.
+
+### Train VisTA-BAGEL
+
+VisTA fine-tunes the official UniREdit-BAGEL weights for 16,384 steps on the training pairs. Each step holds 8
+examples, one per GPU: four feasible and four infeasible, with both examples of a pair in the same step. In every
+step, two of the four feasible and two of the four infeasible instructions carry the decline hint (MixedHint; the paper describes it as including the reminder in 50% of the training examples), so half
+of all training instructions do. The learning rate is constant at 2e-6 after 8 warm-up steps, AdamW (betas 0.9/0.95,
+no weight decay), gradient clipping at 1.0, seed 20260918; the language model and generation components are
+trained, the VAE and ViT are frozen. Text loss covers the reasoning (with `[ABSTAIN]` and the end token for an
+infeasible example); the image flow-matching loss covers the target image of feasible examples only.
+
+```
+cd vista
+# with the 70 example pairs (default); for the full data, download it and set VISTA_DATA=../data/train
+MODEL_PATH=<BAGEL-7B-MoT> INIT_WEIGHTS=<UniREdit-BAGEL model.safetensors> OUT=runs/vista bash launch.sh
+```
+
+`vista/launch.sh` holds every trainer argument. By default only the raw weights of the last step are saved
+(`runs/vista/checkpoints/0016384/model.safetensors`), which is the checkpoint that `eval/infer.py` loads.
+`vista/check_data.py` checks the data, the sampler, the MixedHint assignment and the packed loss masks without a GPU:
+
+```
+cd vista
+MODEL_PATH=<BAGEL-7B-MoT> PYTHONPATH=../bagel:. python check_data.py --files          # VISTA_DATA=../data/train for the full set
+```
+
+## 📚 Data
+
+### DoD benchmark
 
 `instruction.jsonl` (what a model sees) and `ground_truth_criteria.jsonl` (labels, hidden from the model):
 
@@ -128,65 +210,25 @@ official instruction, chain of thought, and input and target images, and the pai
 input image. The 5,200 maze pairs are generated by us. In `data/train_examples/` the photographs are again stored as
 WebP and the mazes as PNG.
 
-## Evaluate
-
-Two settings, both with reasoning enabled: `no_hint` gives the request as it is, and `decline_hint` appends
-"If no solution exists under these constraints, state that no solution exists and briefly explain why."
-In the paper these are the settings *without* and *with the reminder*.
-
-By default the scripts read `data/dod_examples/`. For the full benchmark, download it (see "Data") and pass
-`--data ../data/dod` to `infer.py` and `judge.py`.
+## 🗂️ Repository Layout
 
 ```
-cd eval
-export PYTHONPATH=../bagel:.
-# 1. inference (16 shards can run in parallel; every case has its own seed, so the sharding does not change outputs)
-python infer.py infer --checkpoint <model.safetensors> --model-path <BAGEL-7B-MoT> --setting no_hint \
-       --out runs/vista_no_hint --shards 16 --shard-index 0
-python infer.py merge --out runs/vista_no_hint
-# 2. judging with Kimi-K3 (any OpenAI-compatible endpoint serving the model name "kimi-k3")
-KIMI_BASE_URLS=http://<host>:8000/v1 python judge.py --run runs/vista_no_hint
+assets/               logo and overview figure
+data/dod_examples/    42 DoD requests (the first 3 pairs of every category) with their images
+data/train_examples/  70 training examples (the first 5 pairs of every category) with their images
+data/download.py      downloads the full DoD benchmark and training set from Hugging Face (see "Data")
+bagel/                the BAGEL code base (trainer, data, model, inferencer) that our runs use; Apache-2.0
+vista/                VisTA training: dataset, MixedHint sampler, hooks, entry point, launch script, data checks
+eval/                 inference (infer.py) and the Kimi-K3 judge (judge.py)
 ```
 
-The model reasons first. If the reasoning ends with `[ABSTAIN]` it stops and no image is generated; otherwise it
-draws the edit. `judge.py` writes `runs/.../scoring/summary.json` with, over all requests and by category:
+`bagel/` is the code of the official [BAGEL](https://github.com/ByteDance-Seed/Bagel) release (ByteDance Seed,
+Apache-2.0) with the modifications that our runs need: training samples without a target image (infeasible requests
+have none), token-weighted dataset mixing, and checkpoint options. It also contains the think-trace dataset of
+[Bagel-Zebra-CoT](https://github.com/multimodal-reasoning-lab/Bagel-Zebra-CoT) (Apache-2.0), as used by UniREdit.
+Licence headers are unchanged.
 
-* `feasible_edit`: editing success E, the requested edit is made and unrelated content is preserved (judged from the images);
-* `infeasible_cot`: refusal success D, the reasoning explicitly concludes that the request has no valid solution;
-* `false_refusal`: D<sub>f</sub>, the same conclusion on a feasible request.
-
-Judgments that fail or are malformed stay `pending` and are counted in the denominator, never as failures.
-Generation settings (50 image steps, text CFG 4.0, image CFG 2.0, at most 1,000 reasoning tokens, greedy text
-decoding) are in `eval/infer.py`; the judge prompts are in `eval/judge.py`. The judge also receives the label of the
-request (`ground_truth`); in the released data its explanation fields (`reason`, `witness`, `certificate`) are in
-English.
-
-## Train VisTA-BAGEL
-
-VisTA fine-tunes the official UniREdit-BAGEL weights for 16,384 steps on the training pairs. Each step holds 8
-examples, one per GPU: four feasible and four infeasible, with both examples of a pair in the same step. In every
-step, two of the four feasible and two of the four infeasible instructions carry the decline hint (MixedHint; the paper describes it as including the reminder in 50% of the training examples), so half
-of all training instructions do. The learning rate is constant at 2e-6 after 8 warm-up steps, AdamW (betas 0.9/0.95,
-no weight decay), gradient clipping at 1.0, seed 20260918; the language model and generation components are
-trained, the VAE and ViT are frozen. Text loss covers the reasoning (with `[ABSTAIN]` and the end token for an
-infeasible example); the image flow-matching loss covers the target image of feasible examples only.
-
-```
-cd vista
-# with the 70 example pairs (default); for the full data, download it and set VISTA_DATA=../data/train
-MODEL_PATH=<BAGEL-7B-MoT> INIT_WEIGHTS=<UniREdit-BAGEL model.safetensors> OUT=runs/vista bash launch.sh
-```
-
-`vista/launch.sh` holds every trainer argument. By default only the raw weights of the last step are saved
-(`runs/vista/checkpoints/0016384/model.safetensors`), which is the checkpoint that `eval/infer.py` loads.
-`vista/check_data.py` checks the data, the sampler, the MixedHint assignment and the packed loss masks without a GPU:
-
-```
-cd vista
-MODEL_PATH=<BAGEL-7B-MoT> PYTHONPATH=../bagel:. python check_data.py --files          # VISTA_DATA=../data/train for the full set
-```
-
-## Citation
+## 💬 Citation
 
 ```bibtex
 @article{shi2026visual,
@@ -198,7 +240,7 @@ MODEL_PATH=<BAGEL-7B-MoT> PYTHONPATH=../bagel:. python check_data.py --files    
 }
 ```
 
-## License
+## 📌 License
 
 The code is released under the Apache License 2.0 (see `LICENSE`); `bagel/` keeps the Apache-2.0 license of BAGEL
 (`bagel/LICENSE`). The real-world images and the feasible instructions, reference images, and chains of thought come
