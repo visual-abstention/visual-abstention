@@ -1,0 +1,12 @@
+no_hint_sft:
+  dataset_names:
+  - train
+  image_transform_args:
+    image_stride: 16
+    max_image_size: 640
+    min_image_size: 640
+  token_weight: 1.0
+  vit_image_transform_args:
+    image_stride: 14
+    max_image_size: 448
+    min_image_size: 448
