@@ -8,12 +8,13 @@
 
 ![Data License](https://img.shields.io/badge/Data%20License-Apache%202.0-blue.svg) ![Code License](https://img.shields.io/badge/Code%20License-Apache%202.0-blue.svg) ![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)
 
-🌐 <a href="https://visual-abstention.github.io">Website</a> | 📚 <a href="https://huggingface.co/datasets/visual-abstention/Draw-or-Decline">DoD Benchmark</a> | 🧩 <a href="https://huggingface.co/datasets/visual-abstention/VisTA-Train">Training Data</a> | 📃 Paper (coming soon)
+🌐 <a href="https://visual-abstention.github.io">Website</a> | 📚 <a href="https://huggingface.co/datasets/visual-abstention/Draw-or-Decline">DoD Benchmark</a> | 🧩 <a href="https://huggingface.co/datasets/visual-abstention/VisTA-Train">Training Data</a> | 📃 <a href="https://arxiv.org/abs/2610.07887">Paper</a>
 
 </div>
 
 ## 🎉 What's New
 
+- **[2026.10.08]** 📃 The paper is on arXiv: [Visual Abstention in Unified Multimodal Models](https://arxiv.org/abs/2610.07887).
 - **[2026.10.06]** 🔧 Code, the DoD benchmark and the VisTA training data are released.
 
 ## 🎏 Introduction
@@ -241,11 +242,14 @@ Licence headers are unchanged.
 
 ```bibtex
 @article{shi2026visual,
-  title   = {Visual Abstention in Unified Multimodal Models},
-  author  = {Shi, Chufan and Yang, Cheng and Yang, Tiannuo and White, Isadora and Chen, Yiwei and
-             Berg-Kirkpatrick, Taylor and Ma, Xuezhe},
-  journal = {arXiv preprint},
-  year    = {2026}
+  title         = {Visual Abstention in Unified Multimodal Models},
+  author        = {Shi, Chufan and Yang, Cheng and Yang, Tiannuo and White, Isadora and Chen, Yiwei and
+                   Berg-Kirkpatrick, Taylor and Ma, Xuezhe},
+  journal       = {arXiv preprint arXiv:2610.07887},
+  year          = {2026},
+  eprint        = {2610.07887},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL}
 }
 ```
 
